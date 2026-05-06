@@ -1,60 +1,554 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Site</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 50px;
-        }
-
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 600px;
-            margin: auto;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        button {
-            padding: 10px 15px;
-            border: none;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --black:   #0a0a0a;
+      --darkgrey:#111111;
+      --mid:     #1c1c1c;
+      --border:  #2a2a2a;
+      --white:   #f0f0f0;
+      --dim:     #888;
+      --red:     #d62828;
+      --red-glow:rgba(214,40,40,0.35);
+      --mono:    'Share Tech Mono', monospace;
+      --sans:    'Barlow', sans-serif;
+      --display: 'Orbitron', sans-serif;
+    }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+ 
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+ 
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+ 
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      color: var(--red);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .nav-logo span { color: var(--white); }
+ 
+    nav ul {
+      list-style: none;
+      display: flex; gap: 2.5rem;
+    }
+    nav ul a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: var(--dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      position: relative;
+      transition: color 0.2s;
+    }
+    nav ul a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--red);
+      transition: width 0.25s ease;
+    }
+    nav ul a:hover { color: var(--white); }
+    nav ul a:hover::after { width: 100%; }
+    nav ul a.active { color: var(--white); }
+    nav ul a.active::after { width: 100%; }
+ 
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 0 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+ 
+    #hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(214,40,40,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(214,40,40,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+ 
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(214,40,40,0.12) 0%, transparent 70%);
+      top: 50%; left: 10%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+      to   { opacity: 1;   transform: translate(-50%, -50%) scale(1.12); }
+    }
+ 
+    .hero-inner {
+      position: relative; z-index: 2;
+      max-width: 860px;
+    }
+ 
+    .hero-pre {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.3s ease forwards;
+    }
+ 
+    .hero-name {
+      font-family: var(--display);
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.7s 0.6s ease forwards;
+    }
+    .hero-name .accent { color: var(--red); }
+ 
+    .hero-terminal {
+      margin-top: 2.2rem;
+      font-family: var(--mono);
+      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.7s 1s ease forwards;
+      min-height: 2em;
+    }
+    .terminal-prompt {
+      color: var(--red);
+      margin-right: 0.5rem;
+      user-select: none;
+    }
+    .typed-text { }
+    .cursor-blink {
+      display: inline-block;
+      width: 2px; height: 1.1em;
+      background: var(--red);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+ 
+    .hero-cta {
+      margin-top: 3rem;
+      display: flex; gap: 1.2rem; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 1.2s ease forwards;
+    }
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.85rem 2rem;
+      text-decoration: none;
+      border: 1px solid;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      border-color: var(--red);
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--red);
+      box-shadow: 0 0 18px var(--red-glow);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--dim);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--white);
+      color: var(--white);
+    }
+ 
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0;
+      animation: fadeIn 1s 2s ease forwards;
+    }
+    .scroll-hint span {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--red), transparent);
+      animation: scrollDrop 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollDrop {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+ 
+    #skills {
+      padding: 8rem 3rem;
+      background: var(--darkgrey);
+      border-top: 1px solid var(--border);
+      position: relative;
+    }
+ 
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      color: var(--dim);
+      font-size: 1rem;
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 4rem;
+    }
+ 
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+ 
+    .skill-card {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--red);
+      transition: height 0.35s ease;
+    }
+    .skill-card:hover { border-color: rgba(214,40,40,0.4); transform: translateY(-4px); }
+    .skill-card:hover::before { height: 100%; }
+ 
+    .skill-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .skill-card-title {
+      font-family: var(--display);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+    }
+    .skill-tags {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .skill-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .skill-card:hover .skill-tag {
+      border-color: rgba(214,40,40,0.3);
+      color: var(--white);
+    }
+ 
+    #footer-cta {
+      padding: 7rem 3rem;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+    #footer-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(214,40,40,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    #footer-cta .section-title { position: relative; z-index: 1; }
+    #footer-cta .section-sub   { position: relative; z-index: 1; text-align: center; }
+    #footer-cta .hero-cta      { position: relative; z-index: 1; justify-content: center; opacity: 1; animation: none; }
+ 
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--black);
+    }
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--border);
+    }
+    .footer-dot {
+      width: 6px; height: 6px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: blink 2s step-end infinite;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+ 
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      #hero, #skills, #footer-cta { padding-left: 1.5rem; padding-right: 1.5rem; }
+      footer { padding: 1.2rem 1.5rem; flex-direction: column; gap: 0.8rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>Hello, World</h1>
-    <p>This is my starter site. Edit this later.</p>
-    <button onclick="changeText()">Click Me</button>
-    <br><br>
-<a href="about.html">About</a> |
-<a href="projects.html">Projects</a>
-</div>
-
-<script>
-    function changeText() {
-        document.querySelector("p").innerText = "You changed this text!";
+ 
+  <nav>
+    <a class="nav-logo" href="index.html"><span>//</span> Portfolio</a>
+    <ul>
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="projects.html">Projects</a></li>
+    </ul>
+  </nav>
+ 
+  <section id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <p class="hero-pre">// Welcome to my portfolio</p>
+      <h1 class="hero-name">YOUR<br><span class="accent">NAME</span><br>HERE.</h1>
+      <div class="hero-terminal">
+        <span class="terminal-prompt">&gt;</span><span class="typed-text"></span><span class="cursor-blink"></span>
+      </div>
+      <div class="hero-cta">
+        <a href="projects.html" class="btn btn-primary">View Projects</a>
+        <a href="about.html" class="btn btn-ghost">About Me</a>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+ 
+  <section id="skills">
+    <p class="section-label">// skills_tech.json</p>
+    <h2 class="section-title">Skills &amp;<br>Technologies</h2>
+    <p class="section-sub">A snapshot of the systems, equipment, and OSs I work with to build things that actually work.</p>
+ 
+    <div class="skills-grid">
+ 
+      <div class="skill-card">
+        <div class="skill-card-icon">⬡</div>
+        <div class="skill-card-title">Ruckus FastIron</div>
+        <div class="skill-tags">
+          <span class="skill-tag">CLI</span>
+          <span class="skill-tag">GUI</span>
+          <span class="skill-tag">ICX</span>
+          <span class="skill-tag">Layer 2</span>
+          <span class="skill-tag">Layer 3</span>
+          <span class="skill-tag">VLAN</span>
+          <span class="skill-tag">Fiber</span>
+          <span class="skill-tag">Copper</span>
+        </div>
+      </div>
+ 
+      <div class="skill-card">
+        <div class="skill-card-icon">◈</div>
+        <div class="skill-card-title">Windows</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Active Directory</span>
+          <span class="skill-tag">PowerShell</span>
+          <span class="skill-tag">Group Policy</span>
+          <span class="skill-tag">10/11</span>
+        </div>
+      </div>
+ 
+      <div class="skill-card">
+        <div class="skill-card-icon">◫</div>
+        <div class="skill-card-title">Cisco iOS</div>
+        <div class="skill-tags">
+          <span class="skill-tag">CLI</span>
+          <span class="skill-tag">GUI</span>
+          <span class="skill-tag">Layer 2</span>
+          <span class="skill-tag">VLAN</span>
+          <span class="skill-tag">Fiber</span>
+          <span class="skill-tag">Copper</span>
+        </div>
+      </div>
+ 
+      <div class="skill-card">
+        <div class="skill-card-icon">⬙</div>
+        <div class="skill-card-title">Intune</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Groups</span>
+          <span class="skill-tag">App Deployments</span>
+          <span class="skill-tag">Policy</span>
+          <span class="skill-tag">Remediations</span>
+          <span class="skill-tag">PowerShell</span>
+        </div>
+      </div>
+ 
+      <div class="skill-card">
+        <div class="skill-card-icon">◎</div>
+        <div class="skill-card-title">Linux</div>
+        <div class="skill-tags">
+          <span class="skill-tag">CLI</span>
+          <span class="skill-tag">Ubuntu Server</span>
+          <span class="skill-tag">GUI</span>
+        </div>
+      </div>
+ 
+    </div>
+  </section>
+ 
+  <section id="footer-cta">
+    <p class="section-label">// navigate.next()</p>
+    <h2 class="section-title">Want to<br>See More?</h2>
+    <p class="section-sub">Check out the projects I've built or learn a bit more about who I am.</p>
+    <div class="hero-cta">
+      <a href="projects.html" class="btn btn-primary">See My Work</a>
+      <a href="about.html" class="btn btn-ghost">About Me</a>
+    </div>
+  </section>
+ 
+  <footer>
+    <p>// PORTFOLIO &nbsp;·&nbsp; Built with HTML, CSS &amp; JS</p>
+  </footer>
+ 
+  <script>
+    const phrases = [
+      'Network Admin',
+      'End User Support Specialist',
+      'IT Consultant'
+    ];
+    let phraseIdx = 0, charIdx = 0, deleting = false;
+    const typedEl = document.querySelector('.typed-text');
+ 
+    function type() {
+      const phrase = phrases[phraseIdx];
+      if (!deleting) {
+        typedEl.textContent = phrase.substring(0, ++charIdx);
+        if (charIdx === phrase.length) {
+          deleting = true;
+          setTimeout(type, 1800);
+          return;
+        }
+      } else {
+        typedEl.textContent = phrase.substring(0, --charIdx);
+        if (charIdx === 0) {
+          deleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+          setTimeout(type, 400);
+          return;
+        }
+      }
+      setTimeout(type, deleting ? 40 : 75);
     }
-</script>
-
+ 
+    
+    setTimeout(type, 1200);
+ 
+  
+    const cards = document.querySelectorAll('.skill-card');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '0';
+          e.target.style.transform = 'translateY(20px)';
+          e.target.style.transition = `opacity 0.5s ${i * 0.1}s ease, transform 0.5s ${i * 0.1}s ease, border-color 0.3s, transform 0.3s`;
+          requestAnimationFrame(() => {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+          });
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    cards.forEach(c => { c.style.opacity = '0'; obs.observe(c); });
+  </script>
 </body>
 </html>
