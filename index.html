@@ -277,7 +277,8 @@
  
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, auto);
       gap: 1.5rem;
     }
  
@@ -443,6 +444,7 @@
           <span class="skill-tag">PowerShell</span>
           <span class="skill-tag">Group Policy</span>
           <span class="skill-tag">10/11</span>
+          <span class="skill-tag">Advanced Troubleshooting</span>
         </div>
       </div>
  
@@ -478,6 +480,16 @@
           <span class="skill-tag">CLI</span>
           <span class="skill-tag">Ubuntu Server</span>
           <span class="skill-tag">GUI</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-card-icon">⬟</div>
+        <div class="skill-card-title">MacOS / iOS</div>
+        <div class="skill-tags">
+          <span class="skill-tag">CLI</span>
+          <span class="skill-tag">GUI</span>
+          <span class="skill-tag">Advanced Troubleshooting</span>
         </div>
       </div>
  
@@ -528,10 +540,8 @@
       setTimeout(type, deleting ? 40 : 75);
     }
  
-    
     setTimeout(type, 1200);
  
-  
     const cards = document.querySelectorAll('.skill-card');
     const obs = new IntersectionObserver(entries => {
       entries.forEach((e, i) => {
