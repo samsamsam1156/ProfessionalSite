@@ -1,12 +1,567 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Projects</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Portfolio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --darkgrey:#111111;
+      --mid:     #1c1c1c;
+      --border:  #2a2a2a;
+      --white:   #f0f0f0;
+      --dim:     #888;
+      --red:     #d62828;
+      --red-glow:rgba(214,40,40,0.35);
+      --mono:    'Courier New', Courier, monospace;
+      --sans:    'Times New Roman', Times, serif;
+      --display: 'Times New Roman', Times, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--sans);
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      color: var(--red);
+      text-decoration: none;
+      text-transform: uppercase;
+      font-style: italic;
+    }
+    .nav-logo span { color: var(--white); font-style: normal; }
+
+    nav ul {
+      list-style: none;
+      display: flex; gap: 2.5rem;
+    }
+    nav ul a {
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      color: var(--dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      position: relative;
+      transition: color 0.2s;
+    }
+    nav ul a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--red);
+      transition: width 0.25s ease;
+    }
+    nav ul a:hover { color: var(--white); }
+    nav ul a:hover::after { width: 100%; }
+    nav ul a.active { color: var(--white); }
+    nav ul a.active::after { width: 100%; }
+
+    #page-header {
+      padding: 10rem 3rem 5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    #page-header::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(214,40,40,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(214,40,40,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .header-glow {
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(214,40,40,0.1) 0%, transparent 70%);
+      top: 50%; right: 5%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .header-inner { position: relative; z-index: 2; }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .page-title {
+      font-family: var(--display);
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.3s ease forwards;
+    }
+    .page-title .accent { color: var(--red); }
+    .page-sub {
+      font-family: var(--sans);
+      color: var(--dim);
+      font-size: 1.05rem;
+      line-height: 1.75;
+      max-width: 520px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s ease forwards;
+    }
+
+    #projects {
+      padding: 6rem 3rem 8rem;
+      background: var(--darkgrey);
+    }
+
+    .project-featured {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .project-featured::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 3px;
+      background: var(--red);
+      transition: width 0.4s ease;
+    }
+    .project-featured:hover { border-color: rgba(214,40,40,0.4); }
+    .project-featured:hover::before { width: 100%; }
+
+    .project-featured-image {
+      background: var(--black);
+      border-right: 1px solid var(--border);
+      min-height: 340px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .img-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+    }
+    .img-placeholder-icon {
+      font-size: 2.5rem;
+      opacity: 0.15;
+    }
+    .img-placeholder-text {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--border);
+      text-transform: uppercase;
+    }
+
+    .project-featured-body {
+      padding: 3rem;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .project-number {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .project-title {
+      font-family: var(--display);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .project-desc {
+      font-family: var(--sans);
+      color: var(--white);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      margin-bottom: 1.8rem;
+    }
+    .project-tags {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .project-tag {
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--border);
+      color: var(--dim);
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .project-featured:hover .project-tag,
+    .project-card:hover .project-tag {
+      border-color: rgba(214,40,40,0.3);
+      color: var(--white);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--red);
+      transition: height 0.35s ease;
+    }
+    .project-card:hover { border-color: rgba(214,40,40,0.4); transform: translateY(-4px); }
+    .project-card:hover::before { height: 100%; }
+
+    .project-card-image {
+      background: var(--black);
+      border-bottom: 1px solid var(--border);
+      height: 180px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .project-card-body {
+      padding: 1.8rem;
+    }
+
+    /* ── FOOTER CTA ── */
+    #footer-cta {
+      padding: 7rem 3rem;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+    #footer-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(214,40,40,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--white);
+      margin-bottom: 1rem;
+      position: relative; z-index: 1;
+    }
+    .section-sub {
+      color: var(--dim);
+      font-size: 1.05rem;
+      max-width: 480px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+      font-family: var(--sans);
+      text-align: center;
+      position: relative; z-index: 1;
+    }
+    .cta-btns {
+      display: flex; gap: 1.2rem; flex-wrap: wrap;
+      justify-content: center;
+      position: relative; z-index: 1;
+    }
+    .btn {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.85rem 2rem;
+      text-decoration: none;
+      border: 1px solid;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      border-color: var(--red);
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--red);
+      box-shadow: 0 0 18px var(--red-glow);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--dim);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover {
+      border-color: var(--white);
+      color: var(--white);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--black);
+    }
+    footer p {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: var(--border);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      .project-featured { grid-template-columns: 1fr; }
+      .project-featured-image { border-right: none; border-bottom: 1px solid var(--border); min-height: 200px; }
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      #page-header, #projects, #footer-cta { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      footer { padding: 1.2rem 1.5rem; flex-direction: column; gap: 0.8rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Projects Page</h1>
-    <p>Projects will be added here later.</p>
 
-    <a href="index.html">Home</a>
+  <nav>
+
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="projects.html" class="active">Projects</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </nav>
+
+  <section id="page-header">
+    <div class="header-glow"></div>
+    <div class="header-inner">
+      <p class="section-label">// projects.log</p>
+      <h1 class="page-title">My<br><span class="accent">Projects</span></h1>
+      <p class="page-sub">Hands-on infrastructure experience from firewall recoveries to full building deployments.</p>
+    </div>
+  </section>
+
+  <section id="projects">
+
+    <div class="project-featured">
+      <div class="project-featured-image">
+        <div class="img-placeholder">
+          <div class="img-placeholder-icon">◈</div>
+          <span class="img-placeholder-text">Image coming soon</span>
+        </div>
+      </div>
+      <div class="project-featured-body">
+        <h2 class="project-title">Firewall Recovery</h2>
+        <p class="project-desc">Served as the sole onsite network technician during a campus-wide outage caused by a firewall data plane failure. Coordinated with senior infrastructure staff and a Palo Alto Networks engineer to diagnose the issue, access the firewall via console, and deploy the onsite spare firewall to restore network connectivity.</p>
+        <div class="project-tags">
+          <span class="project-tag">Palo Alto</span>
+          <span class="project-tag">NGFW</span>
+          <span class="project-tag">CLI</span>
+          <span class="project-tag">Hardware</span>
+          <span class="project-tag">Troubleshooting</span>
+          <span class="project-tag">Configuration</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="img-placeholder">
+            <div class="img-placeholder-icon">⬡</div>
+            <span class="img-placeholder-text">Image coming soon</span>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-title">HA Transition</h3>
+          <p class="project-desc">Description coming soon.</p>
+          <div class="project-tags">
+            <span class="project-tag">Hardware</span>
+            <span class="project-tag">Network</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="img-placeholder">
+            <div class="img-placeholder-icon">◫</div>
+            <span class="img-placeholder-text">Image coming soon</span>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-title">Core Fiber Condensing</h3>
+          <p class="project-desc">Description coming soon.</p>
+          <div class="project-tags">
+            <span class="project-tag">Fiber</span>
+            <span class="project-tag">Ruckus FastIron</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="img-placeholder">
+            <div class="img-placeholder-icon">⬙</div>
+            <span class="img-placeholder-text">Image coming soon</span>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-title">CBET Install</h3>
+          <p class="project-desc">Description coming soon.</p>
+          <div class="project-tags">
+            <span class="project-tag">Hardware</span>
+            <span class="project-tag">Windows</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="img-placeholder">
+            <div class="img-placeholder-icon">◎</div>
+            <span class="img-placeholder-text">Image coming soon</span>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-title">CRAVE Install</h3>
+          <p class="project-desc">Description coming soon.</p>
+          <div class="project-tags">
+            <span class="project-tag">Hardware</span>
+            <span class="project-tag">Windows</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="img-placeholder">
+            <div class="img-placeholder-icon">⬟</div>
+            <span class="img-placeholder-text">Image coming soon</span>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-title">CEL Install</h3>
+          <p class="project-desc">Description coming soon.</p>
+          <div class="project-tags">
+            <span class="project-tag">Hardware</span>
+            <span class="project-tag">Windows</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="img-placeholder">
+            <div class="img-placeholder-icon">◈</div>
+            <span class="img-placeholder-text">Image coming soon</span>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-title">Homelab</h3>
+          <p class="project-desc">Description coming soon.</p>
+          <div class="project-tags">
+            <span class="project-tag">Linux</span>
+            <span class="project-tag">Hardware</span>
+            <span class="project-tag">Self-Hosted</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="footer-cta">
+    <p class="section-label">// navigate.next()</p>
+    <h2 class="section-title">Want to<br>Know More?</h2>
+    <p class="section-sub">Learn a bit more about who I am and the experience behind these projects.</p>
+    <div class="cta-btns">
+      <a href="about.html" class="btn btn-primary">About Me</a>
+      <a href="index.html" class="btn btn-ghost">Back to Home</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>// PORTFOLIO &nbsp;·&nbsp; Built with HTML, CSS &amp; JS</p>
+  </footer>
+
+  <script>
+    const cards = document.querySelectorAll('.project-card');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '0';
+          e.target.style.transform = 'translateY(20px)';
+          e.target.style.transition = `opacity 0.5s ${i * 0.08}s ease, transform 0.5s ${i * 0.08}s ease, border-color 0.3s, transform 0.3s`;
+          requestAnimationFrame(() => {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+          });
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach(c => { c.style.opacity = '0'; obs.observe(c); });
+  </script>
+
 </body>
 </html>
